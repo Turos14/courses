@@ -18,6 +18,8 @@ npm run serve
 
 There is no linter or formatter in this repo.
 
+`.devcontainer/devcontainer.json` defines a Codespaces/VS Code Dev Containers environment (Node 20 image, `npm install` + `npx playwright install --with-deps chromium` on creation, port 4173 forwarded) for coding from the browser without a local setup.
+
 ## Testing
 
 Playwright end-to-end tests drive the real static site in a real browser (no mocking, no DOM simulation) — see `tests/*.spec.js`, config in `playwright.config.js`.
@@ -40,7 +42,9 @@ npx playwright show-report                 # open the HTML report from the last 
 
 ## Deployment
 
-There's no CI/CD — deployment is manual: `npm run zip` (`scripts/zip.js`) zips the contents of `public/` (flattened, no wrapping folder) into a versioned `courses-v<version>.zip` (from `package.json`'s `version`) at the repo root, ready to upload wherever the static app is hosted. Every local CSS/JS/icon/manifest `<script>`/`<link>` tag in `public/index.html` carries a `?v=CACHE_VERSION_PLACEHOLDER` query string; `zip.js` replaces that placeholder with a build timestamp when it writes `index.html` into the zip (everything else in `public/` is copied as-is) so each deploy forces browsers — notably mobile Safari for sites added to the home screen — to refetch CSS/JS instead of serving a stale cached copy. The placeholder itself is a valid (if inert) query string, so local dev (`npm run serve`, Playwright's `webServer`) is unaffected without needing the substitution.
+Two deployment paths exist side by side. **Manual** (e.g. for the self-hosted `apps.home.ithasu.org` portal): `npm run zip` (`scripts/zip.js`) zips the contents of `public/` (flattened, no wrapping folder) into a versioned `courses-v<version>.zip` (from `package.json`'s `version`) at the repo root, ready to upload wherever the static app is hosted. **Automatic** (GitHub Pages): `.github/workflows/deploy-pages.yml` deploys `public/` on every push to `main` (and on manual `workflow_dispatch`), via the standard `actions/configure-pages` + `actions/upload-pages-artifact` + `actions/deploy-pages` trio — requires the repo's Settings → Pages → Source to be set to "GitHub Actions" (one-time, not settable from the workflow file itself).
+
+Every local CSS/JS/icon/manifest `<script>`/`<link>` tag in `public/index.html` carries a `?v=CACHE_VERSION_PLACEHOLDER` query string, so each deploy forces browsers — notably mobile Safari for sites added to the home screen — to refetch CSS/JS instead of serving a stale cached copy; the placeholder itself is a valid (if inert) query string, so local dev (`npm run serve`, Playwright's `webServer`) is unaffected without needing the substitution. Both deployment paths must keep performing this same substitution on their own copy of `index.html` (never on the committed file itself) rather than assuming the other one already did it: `zip.js` replaces it with a build timestamp when writing `index.html` into the zip; the Pages workflow replaces it with `${{ github.sha }}` via `sed` on the checked-out workspace copy before uploading the Pages artifact.
 
 ## Architecture
 

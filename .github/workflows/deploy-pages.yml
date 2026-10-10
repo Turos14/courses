@@ -1,0 +1,47 @@
+name: Déploiement GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Évite deux déploiements concurrents ; laisse celui en cours se terminer plutôt
+# que de l'annuler, pour ne jamais publier une version à moitié déployée.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Récupération du dépôt
+        uses: actions/checkout@v4
+
+      - name: Cache-buster des assets (voir scripts/zip.js)
+        # public/index.html référence son CSS/JS avec ?v=CACHE_VERSION_PLACEHOLDER ; scripts/zip.js
+        # fait le même remplacement pour le déploiement manuel (zip). On applique ici la même
+        # substitution sur la copie de travail (le dépôt lui-même n'est pas modifié) pour que
+        # chaque déploiement force les navigateurs à refetch le CSS/JS plutôt que de servir une
+        # version en cache (notamment Safari mobile pour l'app ajoutée à l'écran d'accueil).
+        run: sed -i "s/CACHE_VERSION_PLACEHOLDER/${{ github.sha }}/g" public/index.html
+
+      - name: Configuration de GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload de l'artefact Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Déploiement sur GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,19 @@
+{
+    "name": "Mes Courses & Menus Collaboratifs",
+    "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+    "postCreateCommand": "npm install && npx playwright install --with-deps chromium",
+    "forwardPorts": [4173],
+    "portsAttributes": {
+        "4173": {
+            "label": "Mes Courses (npm run serve)",
+            "onAutoForward": "openPreview"
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-playwright.playwright"
+            ]
+        }
+    }
+}
