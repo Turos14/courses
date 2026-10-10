@@ -1,0 +1,21 @@
+{
+  "name": "courses",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "serve": "http-server ./public -p 4173 -c-1",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "zip": "node scripts/zip.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "archiver": "^7.0.1",
+    "http-server": "^14.1.1"
+  }
+}

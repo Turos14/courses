@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Mes Courses & Menus Collaboratifs</title>
+    <link rel="stylesheet" href="css/style.css?v=CACHE_VERSION_PLACEHOLDER">
+
+    <!-- Icône & installation sur l'écran d'accueil (PWA) -->
+    <link rel="manifest" href="manifest.webmanifest?v=CACHE_VERSION_PLACEHOLDER">
+    <link rel="icon" href="favicon.ico?v=CACHE_VERSION_PLACEHOLDER">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png?v=CACHE_VERSION_PLACEHOLDER">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png?v=CACHE_VERSION_PLACEHOLDER">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Mes Courses">
+</head>
+
+<body>
+
+    <!-- Barre de titre globale -->
+    <header>
+        <div class="header-left">
+            <a href="https://apps.home.ithasu.org/" class="header-icon-btn" aria-label="Retour au portail">
+                <svg class="icon-sm" viewBox="0 0 24 24" stroke="white" fill="none" stroke-width="2.5">
+                    <path
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+            </a>
+            <button id="btn-back" class="btn-back hidden" onclick="goBack()" aria-label="Retour">
+                <svg class="icon-sm" viewBox="0 0 24 24" stroke="white" fill="none" stroke-width="2.5">
+                    <path d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+        </div>
+        <h1 id="app-title" class="header-title">Accueil</h1>
+        <div id="header-actions" class="header-actions"></div>
+    </header>
+
+    <main>
+
+        <!-- VUE 1 : ACCUEIL -->
+        <div id="view-home" class="view-section active">
+            <div class="home-menu">
+                <button onclick="openCalendarHome()" class="btn-home btn-home-calendar">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="3" />
+                        <path d="M16 2v4M8 2v4M3 10h18M8 15h.01M12 15h.01M16 15h.01M8 18h.01M12 18h.01" />
+                    </svg>
+                    <span>Calendrier</span>
+                </button>
+
+                <button onclick="navigate('view-editor')" class="btn-home btn-home-editor">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path
+                            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                    <span>Éditeur de plats</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- VUE 2 : LISTE DES PLATS (EDITEUR) -->
+        <div id="view-editor" class="view-section">
+            <div class="editor-header">
+                <p class="text-muted">Gérez vos recettes et ingrédients.</p>
+            </div>
+            <div id="editor-category-tabs" class="category-tabs"></div>
+            <div id="editor-dish-list"></div>
+        </div>
+
+        <!-- VUE 3 : FORMULAIRE PLAT -->
+        <div id="view-dish-form" class="view-section">
+            <div class="form-container">
+                <div class="form-group">
+                    <label class="form-label" for="dish-name">Nom du plat</label>
+                    <input class="form-input" id="dish-name" type="text" placeholder="Ex: Pâtes Carbonara">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="dish-category">Onglet / Catégorie</label>
+                    <select class="form-input" id="dish-category"></select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Ingrédients</label>
+                    <div id="ingredient-inputs"></div>
+                    <button onclick="addIngredientField()" class="btn-link">
+                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M12 5v14M5 12h14" />
+                        </svg>
+                        Ajouter un ingrédient
+                    </button>
+                </div>
+
+                <button onclick="saveDish()" class="btn-save-full">Enregistrer le plat</button>
+            </div>
+        </div>
+
+        <!-- VUE 5 : LISTE DE COURSE FINALE -->
+        <div id="view-course-list" class="view-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <span id="items-count-badge" class="text-muted" style="font-weight: 600;">0 articles</span>
+                <button id="btn-clear-checked" onclick="clearCheckedItems()" class="hidden"
+                    style="border: 1px solid #fee2e2; background-color: #fef2f2; padding: 8px 12px; border-radius: 10px; color: #ef4444; font-weight: bold; font-size: 0.8rem; cursor: pointer;">
+                    Effacer les cochés
+                </button>
+            </div>
+            <div id="shopping-list-container"></div>
+
+            <button onclick="navigate('view-home')" class="btn-save-full"
+                style="background-color: #4b5563; box-shadow: 0 4px 12px rgba(75, 85, 99, 0.2); margin-top: 32px;">
+                Retour à l'accueil
+            </button>
+        </div>
+
+        <!-- VUE 6 : CALENDRIER DES REPAS -->
+        <div id="view-calendar" class="view-section">
+            <p class="text-muted" style="margin-bottom: 12px;">Tous vos calendriers, sauvegardés ou reçus par partage.</p>
+            <div id="calendar-switcher" class="category-tabs"></div>
+
+            <div id="calendar-no-active" class="hidden">
+                <div class="no-data">Aucun calendrier sélectionné. Touchez "+" ci-dessus pour en créer un.</div>
+            </div>
+
+            <div id="calendar-content">
+                <div class="calendar-active-name-row">
+                    <h2 id="calendar-active-name" class="section-title" style="margin:0;"></h2>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn-action" onclick="renameActiveCalendar()" aria-label="Renommer ce calendrier">
+                            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        </button>
+                        <button class="btn-action delete" onclick="confirmDeleteActiveCalendar()" aria-label="Supprimer ce calendrier">
+                            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="calendar-header-row">
+                    <button class="calendar-nav-btn" onclick="changeCalendarWeek(-1)" aria-label="Semaine précédente">‹</button>
+                    <span id="calendar-week-label" class="calendar-period-label"></span>
+                    <button class="calendar-nav-btn" onclick="changeCalendarWeek(1)" aria-label="Semaine suivante">›</button>
+                </div>
+                <div id="calendar-week-days" class="calendar-week-days"></div>
+
+                <h2 class="section-title">🥐 Petits-déjeuners de la semaine</h2>
+                <p class="text-muted" style="margin-bottom: 12px;">Des courses libres pour toute la semaine (pas jour par jour), indépendantes des plats.</p>
+                <div id="breakfast-items-list" style="margin-bottom: 12px;"></div>
+
+                <button onclick="addFreeItem('breakfastItems')" class="btn-link" style="margin-bottom: 20px;">
+                    ➕ Ajouter un petit-déjeuner
+                </button>
+
+                <h2 class="section-title">➕ Ingrédients isolés</h2>
+                <p class="text-muted" style="margin-bottom: 12px;">Des courses ponctuelles, indépendantes des plats (ex: Lessive, Pain...), pour ce calendrier.</p>
+                <div id="custom-ingredients-list" style="margin-bottom: 12px;"></div>
+
+                <button onclick="addFreeItem('customIngredients')" class="btn-link" style="margin-bottom: 20px;">
+                    ➕ Ajouter un ingrédient isolé
+                </button>
+
+                <div class="fixed-footer">
+                    <div class="calendar-actions-footer">
+                        <button id="btn-calendar-generate" class="btn-calendar-action btn-calendar-action-generate" onclick="generateCalendarShoppingList()" disabled>
+                            🛒<span>Liste de courses</span>
+                        </button>
+                        <button id="btn-calendar-share" class="btn-calendar-action btn-calendar-action-share" onclick="shareActiveCalendar()" disabled>
+                            📤<span>Partager</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- --- MODALES --- -->
+    <div id="modal-share" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width: 380px;">
+            <div class="modal-title">📤 Transmettre mes recettes</div>
+            <div class="modal-body" style="font-size: 0.85rem; line-height: 1.4; color: #4b5563;">
+                Flashez ce code avec un autre appareil pour y copier toutes vos recettes !
+                <div id="share-qr-container"
+                    style="background: #f9fafb; padding: 16px; border-radius: 20px; margin: 16px 0; border: 1px solid #e5e7eb; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 8px;">
+                    <canvas id="share-qr-canvas" style="width: 200px; height: 200px; display: block; cursor: zoom-in;"
+                        onclick="openFullscreenQR(document.getElementById('share-link-input').value)"></canvas>
+                    <span id="share-qr-hint" style="font-size: 0.7rem; color: #9ca3af;">Toucher le code pour l'agrandir</span>
+                </div>
+                <div id="share-qr-warning" class="hidden"
+                    style="background: #fffbeb; padding: 12px; border-radius: 16px; margin: 16px 0; border: 1px solid #fde68a; color: #92400e; font-size: 0.8rem;">
+                </div>
+                <input type="text" id="share-link-input" readonly class="form-input"
+                    style="font-size: 0.75rem; text-align: center; margin-bottom: 4px; padding: 10px;">
+            </div>
+            <div class="modal-buttons" style="margin-top: 16px;">
+                <button class="btn-modal btn-modal-cancel" onclick="closeShareModal()">Fermer</button>
+                <button class="btn-modal btn-modal-confirm" id="btn-copy-link" onclick="copyShareLink()"
+                    style="background-color: #2563eb;">Copier le lien</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-import" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width: 380px;">
+            <div class="modal-title">📥 Importer des recettes ?</div>
+            <div class="modal-body" style="font-size: 0.85rem; line-height: 1.4; color: #4b5563;">
+                Voulez-vous fusionner ces plats avec votre liste actuelle ?
+                <div id="import-preview-list"
+                    style="max-height: 130px; overflow-y: auto; text-align: left; background: #f9fafb; padding: 12px; border-radius: 12px; border: 1px solid #e5e7eb; margin: 14px 0; font-size: 0.8rem; display: flex; flex-direction: column; gap: 8px;">
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-modal btn-modal-cancel" onclick="rejectImport()">Refuser</button>
+                <button class="btn-modal btn-modal-confirm" onclick="confirmImportDishes()"
+                    style="background-color: #10b981;">Importer</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script src="js/state.js?v=CACHE_VERSION_PLACEHOLDER"></script>
+    <script src="js/storage.js?v=CACHE_VERSION_PLACEHOLDER"></script>
+    <script src="js/navigation.js?v=CACHE_VERSION_PLACEHOLDER"></script>
+    <script src="js/modal.js?v=CACHE_VERSION_PLACEHOLDER"></script>
+    <script src="js/categories.js?v=CACHE_VERSION_PLACEHOLDER"></script>
+    <script src="js/editor.js?v=CACHE_VERSION_PLACEHOLDER"></script>
+    <script src="js/shoppingList.js?v=CACHE_VERSION_PLACEHOLDER"></script>
+    <script src="js/share.js?v=CACHE_VERSION_PLACEHOLDER"></script>
+    <script src="js/calendar.js?v=CACHE_VERSION_PLACEHOLDER"></script>
+    <script src="js/calendarShare.js?v=CACHE_VERSION_PLACEHOLDER"></script>
+    <script src="js/main.js?v=CACHE_VERSION_PLACEHOLDER"></script>
+
+</body>
+
+</html>
