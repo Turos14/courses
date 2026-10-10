@@ -23,7 +23,7 @@ test('génère un lien de partage puis importe la recette sur un autre appareil'
     await expect(importPage.locator('#modal-import')).toBeVisible();
     await expect(importPage.locator('#import-preview-list')).toContainText('Curry de légumes');
 
-    await importPage.getByRole('button', { name: 'Importer' }).click();
+    await importPage.locator('#modal-import').getByRole('button', { name: 'Importer' }).click();
     await importPage.getByText('intégré(s)').waitFor();
     await importPage.locator('#modal-ok').click();
     await importPage.getByText('Éditeur de plats').click();
@@ -52,7 +52,7 @@ test('un lien d\'import utilisé pour "installer" l\'app ne redemande pas l\'imp
 
     await installPage.goto(link);
     await expect(installPage.locator('#modal-import')).toBeVisible();
-    await installPage.getByRole('button', { name: 'Importer' }).click();
+    await installPage.locator('#modal-import').getByRole('button', { name: 'Importer' }).click();
     await installPage.getByText('intégré(s)').waitFor();
     await installPage.locator('#modal-ok').click();
 
@@ -91,7 +91,7 @@ test('charger un lien d\'import sans le confirmer ne le "consomme" pas (aperçu 
     // Ouverture "pour de vrai" ensuite (même lien) : la modale doit encore s'afficher.
     await importPage.goto(link);
     await expect(importPage.locator('#modal-import')).toBeVisible();
-    await importPage.getByRole('button', { name: 'Importer' }).click();
+    await importPage.locator('#modal-import').getByRole('button', { name: 'Importer' }).click();
     await importPage.getByText('intégré(s)').waitFor();
 
     await context.close();

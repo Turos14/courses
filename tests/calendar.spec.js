@@ -163,7 +163,7 @@ test('partage un calendrier puis l\'importe sur un autre appareil', async ({ pag
     await importPage.goto(link);
 
     await expect(importPage.getByText('Importer un calendrier ?')).toBeVisible();
-    await importPage.getByRole('button', { name: 'Importer' }).click();
+    await importPage.locator('#modal-ok').click();
     await importPage.getByText('a été ajouté à').waitFor();
     await importPage.locator('#modal-ok').click();
 
