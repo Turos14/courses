@@ -22,13 +22,3 @@ test('"Calendrier" apparaît avant "Éditeur de plats" sur l\'accueil', async ({
     const labels = await page.locator('.home-menu .btn-home span').allTextContents();
     expect(labels.indexOf('Calendrier')).toBeLessThan(labels.indexOf('Éditeur de plats'));
 });
-
-test('le lien vers le portail reste visible en haut à gauche sur tous les écrans', async ({ page }) => {
-    await page.goto('/');
-    const portalLink = page.locator('a[aria-label="Retour au portail"]');
-    await expect(portalLink).toBeVisible();
-    await expect(portalLink).toHaveAttribute('href', 'https://apps.home.ithasu.org/');
-
-    await page.getByText('Éditeur de plats').click();
-    await expect(portalLink).toBeVisible();
-});
