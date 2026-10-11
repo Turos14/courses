@@ -847,10 +847,6 @@ main {
     background-color: #2563eb;
 }
 
-.btn-calendar-action-share {
-    background-color: #4f46e5;
-}
-
 .calendar-active-name-row {
     display: flex;
     align-items: center;

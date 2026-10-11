@@ -41,7 +41,6 @@ function renderHeaderActions(viewId) {
     var container = document.getElementById('header-actions');
     if (viewId === 'view-editor') {
         container.innerHTML = `
-            <button class="header-icon-btn" onclick="generateShareQRCode()" aria-label="Partager mes recettes">📤</button>
             <button class="header-icon-btn" onclick="openDishForm()" aria-label="Nouveau plat">
                 <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14" /></svg>
             </button>

@@ -29,20 +29,3 @@ function showCustomModal(title, text, onConfirm, showCancel, confirmLabel, confi
         overlay.querySelector('#modal-cancel').onclick = function () { overlay.remove(); };
     }
 }
-
-// --- QR CODE PLEIN ÉCRAN (réutilisé par js/share.js et js/calendarShare.js) ---
-window.openFullscreenQR = function (value) {
-    const overlay = document.createElement('div');
-    overlay.className = 'modal-overlay';
-    overlay.style.background = 'rgba(255,255,255,0.98)';
-    overlay.style.cursor = 'zoom-out';
-    overlay.innerHTML = `<canvas id="fullscreen-qr-canvas" style="width:min(85vw,85vh); height:min(85vw,85vh);"></canvas>`;
-    document.body.appendChild(overlay);
-    new QRious({
-        element: overlay.querySelector('#fullscreen-qr-canvas'),
-        value: value,
-        size: 1000,
-        level: 'L'
-    });
-    overlay.onclick = function () { overlay.remove(); };
-};

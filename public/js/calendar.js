@@ -441,11 +441,8 @@ function calendarHasContent(cal) {
 
 function updateCalendarActionsState() {
     var cal = getActiveCalendar();
-    var disabled = !cal || !calendarHasContent(cal);
-    ['btn-calendar-generate', 'btn-calendar-share'].forEach(function (id) {
-        var btn = document.getElementById(id);
-        if (btn) btn.disabled = disabled;
-    });
+    var btn = document.getElementById('btn-calendar-generate');
+    if (btn) btn.disabled = !cal || !calendarHasContent(cal);
 }
 
 // --- ACTIONS : GÉNÉRER / PARTAGER ---
@@ -468,9 +465,4 @@ window.generateCalendarShoppingList = function () {
     window.shoppingListChecked.clear();
     saveLocalData();
     window.navigate('view-course-list');
-};
-
-window.shareActiveCalendar = function () {
-    var cal = getActiveCalendar();
-    if (cal) window.shareCalendarEntry(cal);
 };

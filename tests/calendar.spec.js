@@ -144,7 +144,11 @@ test('permet de créer plusieurs calendriers et de basculer entre eux via le sé
     await expect(mealSlot(weekDayCard(page, 'Mardi'), 'soir')).toContainText('Ajouter un plat');
 });
 
-test('partage un calendrier puis l\'importe sur un autre appareil', async ({ page, browser }) => {
+test('un calendrier reçu par lien (ancien format, bouton de partage retiré depuis) reste importable', async ({ page, browser }) => {
+    // Le bouton "Partager" du calendrier a été retiré (la sauvegarde/restauration JSON de
+    // js/backup.js couvre ce besoin désormais), mais l'app doit continuer à accepter un lien
+    // ?importCalendar=... déjà envoyé avant ce retrait — on reconstruit ce lien directement
+    // depuis les données du calendrier actif plutôt que de passer par une UI qui n'existe plus.
     await createDish(page, 'Curry de légumes', 'Riz');
     await createCalendarFromHome(page, 'Semaine à partager');
 
@@ -153,9 +157,12 @@ test('partage un calendrier puis l\'importe sur un autre appareil', async ({ pag
     await page.locator('#meal-picker-list').getByText('Curry de légumes').click();
     await page.locator('#meal-picker-confirm').click();
 
-    await page.locator('#btn-calendar-share').click();
-    await expect(page.locator('#calendar-share-link-input')).toBeVisible();
-    const link = await page.locator('#calendar-share-link-input').inputValue();
+    const link = await page.evaluate(() => {
+        const cal = window.savedCalendars.find(c => c.id === window.activeCalendarId);
+        const payload = { n: cal.name, a: cal.assignments, b: cal.breakfastItems, d: cal.dishesSnapshot };
+        const base64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+        return window.location.origin + window.location.pathname + '?importCalendar=' + encodeURIComponent(base64);
+    });
     expect(link).toContain('?importCalendar=');
 
     const importContext = await browser.newContext();
